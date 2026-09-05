@@ -1,5 +1,5 @@
 import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
 
 import '../models/expense.dart';
 
@@ -7,6 +7,9 @@ class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
 
   static Database? _database;
+
+  // Change this to your own strong password later if you want.
+  static const String _databasePassword = 'progree_expense_secure_2026';
 
   DatabaseHelper._init();
 
@@ -26,6 +29,7 @@ class DatabaseHelper {
     return await openDatabase(
       path,
       version: 1,
+      password: _databasePassword,
       onCreate: _createDB,
     );
   }
@@ -42,7 +46,6 @@ class DatabaseHelper {
     ''');
   }
 
-  // CREATE
   Future<int> createExpense(Expense expense) async {
     final db = await database;
 
@@ -53,7 +56,6 @@ class DatabaseHelper {
     );
   }
 
-  // READ
   Future<List<Expense>> getExpenses() async {
     final db = await database;
 
@@ -65,7 +67,6 @@ class DatabaseHelper {
     return result.map((map) => Expense.fromMap(map)).toList();
   }
 
-  // UPDATE
   Future<int> updateExpense(Expense expense) async {
     final db = await database;
 
@@ -77,7 +78,6 @@ class DatabaseHelper {
     );
   }
 
-  // DELETE
   Future<int> deleteExpense(int id) async {
     final db = await database;
 
