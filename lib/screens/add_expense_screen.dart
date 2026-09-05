@@ -84,32 +84,19 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       date: _selectedDate.toIso8601String(),
     );
 
-    debugPrint('SAVE: Button pressed');
-
     try {
       if (widget.expense == null) {
         // CREATE
-        debugPrint('SAVE: Creating new expense');
-
         await DatabaseHelper.instance.createExpense(expense);
-
-        debugPrint('SAVE: Expense created successfully');
       } else {
         // UPDATE
-        debugPrint('SAVE: Updating expense ID ${expense.id}');
-
         await DatabaseHelper.instance.updateExpense(expense);
-
-        debugPrint('SAVE: Expense updated successfully');
       }
 
       if (!mounted) return;
 
       Navigator.pop(context, true);
-    } catch (error, stackTrace) {
-      debugPrint('SAVE ERROR: $error');
-      debugPrint('SAVE STACK TRACE: $stackTrace');
-
+    } catch (error) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(

@@ -135,25 +135,47 @@ class _HomeScreenState extends State<HomeScreen> {
 
         const SizedBox(height: 16),
 
-        Row(
-          children: [
-            Expanded(
-              child: _buildSummaryCard(
-                title: 'Total Expenses',
-                amount: _totalExpenses,
-                icon: Icons.account_balance_wallet,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildSummaryCard(
-                title: 'Today',
-                amount: _todayExpenses,
-                icon: Icons.today,
-              ),
-            ),
-          ],
+        LayoutBuilder(
+  builder: (context, constraints) {
+    if (constraints.maxWidth < 500) {
+      return Column(
+        children: [
+          _buildSummaryCard(
+            title: 'Total Expenses',
+            amount: _totalExpenses,
+            icon: Icons.account_balance_wallet,
+          ),
+          const SizedBox(height: 12),
+          _buildSummaryCard(
+            title: 'Today',
+            amount: _todayExpenses,
+            icon: Icons.today,
+          ),
+        ],
+      );
+    }
+
+    return Row(
+      children: [
+        Expanded(
+          child: _buildSummaryCard(
+            title: 'Total Expenses',
+            amount: _totalExpenses,
+            icon: Icons.account_balance_wallet,
+          ),
         ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildSummaryCard(
+            title: 'Today',
+            amount: _todayExpenses,
+            icon: Icons.today,
+          ),
+        ),
+      ],
+    );
+  },
+),
 
         const SizedBox(height: 28),
 
@@ -169,36 +191,40 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSummaryCard({
-    required String title,
-    required double amount,
-    required IconData icon,
-  }) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, size: 28),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '₹${amount.toStringAsFixed(2)}',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-          ],
-        ),
+ Widget _buildSummaryCard({
+  required String title,
+  required double amount,
+  required IconData icon,
+}) {
+  return Card(
+    elevation: 0,
+    child: Padding(
+      padding: const EdgeInsets.all(18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            icon,
+            size: 30,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '₹${amount.toStringAsFixed(2)}',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+        ],
       ),
-    );
-  }
-
+    ),
+  );
+}
 
 Future<void> _editExpense(Expense expense) async {
   await Navigator.push(
@@ -270,40 +296,54 @@ Future<void> _deleteExpense(Expense expense) async {
   Widget _buildExpenseCard(Expense expense) {
   return Card(
     margin: const EdgeInsets.only(bottom: 12),
-    child: ListTile(
-      leading: CircleAvatar(
-        child: Icon(_getCategoryIcon(expense.category)),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 8,
+        horizontal: 4,
       ),
-      title: Text(
-        expense.description,
-        style: const TextStyle(
-          fontWeight: FontWeight.w600,
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor:
+              Theme.of(context).colorScheme.primaryContainer,
+          child: Icon(
+            _getCategoryIcon(expense.category),
+            color: Theme.of(context).colorScheme.onPrimaryContainer,
+          ),
         ),
-      ),
-      subtitle: Text(
-        '${expense.category} • ${_formatDate(expense.date)}',
-      ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            '₹${expense.amount.toStringAsFixed(2)}',
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
+        title: Text(
+          expense.description,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(
+            '${expense.category} • ${_formatDate(expense.date)}',
+          ),
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '₹${expense.amount.toStringAsFixed(2)}',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          IconButton(
-            onPressed: () => _editExpense(expense),
-            icon: const Icon(Icons.edit_outlined),
-            tooltip: 'Edit',
-          ),
-          IconButton(
-            onPressed: () => _deleteExpense(expense),
-            icon: const Icon(Icons.delete_outline),
-            tooltip: 'Delete',
-          ),
-        ],
+            const SizedBox(width: 4),
+            IconButton(
+              onPressed: () => _editExpense(expense),
+              icon: const Icon(Icons.edit_outlined),
+              tooltip: 'Edit expense',
+            ),
+            IconButton(
+              onPressed: () => _deleteExpense(expense),
+              icon: const Icon(Icons.delete_outline),
+              tooltip: 'Delete expense',
+            ),
+          ],
+        ),
       ),
     ),
   );
